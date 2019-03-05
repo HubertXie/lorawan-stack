@@ -16,6 +16,7 @@ package identityserver
 
 import (
 	"context"
+	"go.thethings.network/lorawan-stack/pkg/identityserver/compat"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -81,6 +82,7 @@ type IdentityServer struct {
 	config *Config
 	db     *gorm.DB
 	oauth  oauth.Server
+	compat *compat.Server
 
 	redis *redis.Client
 }
@@ -139,6 +141,7 @@ func New(c *component.Component, config *Config) (is *IdentityServer, err error)
 		ctx = rights.NewContextWithFetcher(ctx, is)
 		return ctx
 	})
+	is.compat = compat.NewServer(is.FillContext(is.Context()), c.FrequencyPlans, store.GetGatewayStore(is.db))
 
 	for _, hook := range []struct {
 		name       string
@@ -163,6 +166,7 @@ func New(c *component.Component, config *Config) (is *IdentityServer, err error)
 
 	c.RegisterGRPC(is)
 	c.RegisterWeb(is.oauth)
+	c.RegisterWeb(is.compat)
 
 	return is, nil
 }
