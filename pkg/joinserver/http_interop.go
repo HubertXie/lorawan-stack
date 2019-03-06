@@ -15,7 +15,6 @@
 package joinserver
 
 import (
-	"github.com/labstack/echo"
 	"go.thethings.network/lorawan-stack/pkg/interop"
 )
 
@@ -25,9 +24,4 @@ type interopServer struct {
 
 // RegisterInterop registers the NS-JS and AS-JS interop services.
 func (s interopServer) RegisterInterop(srv *interop.Server) {
-	srv.POST("/", func(c echo.Context) error {
-		// TODO: Implement NS-JS and AS-JS Backend Interfaces.
-		c.String(200, "hello world")
-		return nil
-	})
 }
