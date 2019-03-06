@@ -33,23 +33,6 @@ func DeleteDevice(ctx context.Context, r DeviceRegistry, joinEUI types.EUI64, de
 	return err
 }
 
-// CreateDevice creates device dev identified by joinEUI, devEUI from dev.EndDeviceIdentifiers at r.
-func CreateDevice(ctx context.Context, r DeviceRegistry, dev *ttnpb.EndDevice) (*ttnpb.EndDevice, error) {
-	if dev.EndDeviceIdentifiers.JoinEUI == nil || dev.EndDeviceIdentifiers.DevEUI == nil {
-		return nil, errInvalidIdentifiers
-	}
-	dev, err := r.SetByEUI(ctx, *dev.EndDeviceIdentifiers.JoinEUI, *dev.EndDeviceIdentifiers.DevEUI, ttnpb.EndDeviceFieldPathsTopLevel, func(stored *ttnpb.EndDevice) (*ttnpb.EndDevice, []string, error) {
-		if stored != nil {
-			return nil, nil, errDuplicateIdentifiers
-		}
-		return dev, ttnpb.EndDeviceFieldPathsTopLevel, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return dev, nil
-}
-
 // KeyRegistry is a registry, containing session keys.
 type KeyRegistry interface {
 	GetByID(ctx context.Context, devEUI types.EUI64, id []byte, paths []string) (*ttnpb.SessionKeys, error)
@@ -60,21 +43,4 @@ type KeyRegistry interface {
 func DeleteKeys(ctx context.Context, r KeyRegistry, devEUI types.EUI64, id []byte) error {
 	_, err := r.SetByID(ctx, devEUI, id, ttnpb.SessionKeysFieldPathsTopLevel, func(*ttnpb.SessionKeys) (*ttnpb.SessionKeys, []string, error) { return nil, nil, nil })
 	return err
-}
-
-// CreateKeys creates session keys ks identified by devEUI, ks.SessionKeyID at r.
-func CreateKeys(ctx context.Context, r KeyRegistry, devEUI types.EUI64, ks *ttnpb.SessionKeys) (*ttnpb.SessionKeys, error) {
-	if devEUI.IsZero() || len(ks.SessionKeyID) == 0 {
-		return nil, errInvalidIdentifiers
-	}
-	ks, err := r.SetByID(ctx, devEUI, ks.SessionKeyID, ttnpb.SessionKeysFieldPathsTopLevel, func(stored *ttnpb.SessionKeys) (*ttnpb.SessionKeys, []string, error) {
-		if stored != nil {
-			return nil, nil, errDuplicateIdentifiers
-		}
-		return ks, ttnpb.SessionKeysFieldPathsTopLevel, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return ks, nil
 }

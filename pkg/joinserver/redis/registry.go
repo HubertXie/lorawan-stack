@@ -45,7 +45,9 @@ func applyDeviceFieldMask(dst, src *ttnpb.EndDevice, paths ...string) (*ttnpb.En
 	if err := dst.SetFields(src, paths...); err != nil {
 		return nil, err
 	}
-	// TODO: Validation after applying fieldmasks https://github.com/TheThingsNetwork/lorawan-stack/issues/51
+	if err := dst.ValidateFields(paths...); err != nil {
+		return nil, err
+	}
 	return dst, nil
 }
 
@@ -257,10 +259,18 @@ func (r *DeviceRegistry) SetByEUI(ctx context.Context, joinEUI types.EUI64, devE
 }
 
 func applyKeyFieldMask(dst, src *ttnpb.SessionKeys, paths ...string) (*ttnpb.SessionKeys, error) {
+	paths = append(paths, "session_key_id")
+
 	if dst == nil {
 		dst = &ttnpb.SessionKeys{}
 	}
-	return dst, dst.SetFields(src, append(paths, "session_key_id")...)
+	if err := dst.SetFields(src, paths...); err != nil {
+		return nil, err
+	}
+	if err := dst.ValidateFields(paths...); err != nil {
+		return nil, err
+	}
+	return dst, nil
 }
 
 // KeyRegistry is an implementation of joinserver.KeyRegistry.
