@@ -33,11 +33,6 @@ type Server struct {
 	ctx context.Context
 }
 
-const (
-	gatewayIDKey       = "gateway_id"
-	frequencyPlanIDKey = "frequency_plan_id"
-)
-
 const compatAPIPrefix = "/api/v2"
 
 // RegisterRoutes implements the web.Registerer interface.

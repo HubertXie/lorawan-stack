@@ -15,12 +15,18 @@
 package compat
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/labstack/echo"
 	"go.thethings.network/lorawan-stack/pkg/auth/rights"
 	"go.thethings.network/lorawan-stack/pkg/ttnpb"
 	"google.golang.org/grpc/metadata"
+)
+
+const (
+	gatewayIDKey       = "gateway_id"
+	frequencyPlanIDKey = "frequency_plan_id"
 )
 
 // validateAndFillGatewayIDs checks if the request contains a valid gateway ID.
@@ -47,10 +53,13 @@ func (s *Server) requireGatewayRights(required ...ttnpb.Right) echo.MiddlewareFu
 		return func(c echo.Context) error {
 			ctx := s.ctx
 			gatewayIDs := c.Get(gatewayIDKey).(ttnpb.GatewayIdentifiers)
-			auth := c.Request().Header.Get(echo.HeaderAuthorization)
+			auth, err := adaptAuthorization(c.Request().Header.Get(echo.HeaderAuthorization))
+			if err != nil {
+				return err
+			}
 			md := metadata.New(map[string]string{
 				"id":            gatewayIDs.GatewayID,
-				"authorization": adaptAuthorization(auth),
+				"authorization": auth,
 			})
 			if ctxMd, ok := metadata.FromIncomingContext(ctx); ok {
 				md = metadata.Join(ctxMd, md)
@@ -64,16 +73,20 @@ func (s *Server) requireGatewayRights(required ...ttnpb.Right) echo.MiddlewareFu
 	}
 }
 
-const (
-	oldAuthKey = "Key"
-	newAuthKey = "Bearer"
-)
+const newAuthKey = "Bearer"
 
-// adaptAuthorization returns converts the Authorization header value to the
-// "Key" format to the "Bearer" format, if needed.
-func adaptAuthorization(originalAuth string) string {
-	if !strings.HasPrefix(originalAuth, oldAuthKey) {
-		return originalAuth
+// adaptAuthorization converts the Authorization header value to the
+// "Bearer" format, if needed.
+func adaptAuthorization(originalAuth string) (string, error) {
+	if originalAuth == "" {
+		return originalAuth, nil
 	}
-	return newAuthKey + strings.TrimPrefix(originalAuth, oldAuthKey)
+	if !strings.HasPrefix(originalAuth, newAuthKey) {
+		var prefix, key string
+		if _, err := fmt.Sscanf(originalAuth, "%v %v", &prefix, &key); err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%v %v", newAuthKey, key), nil
+	}
+	return originalAuth, nil
 }
