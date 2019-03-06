@@ -83,7 +83,22 @@ func handleRegistryTest(t *testing.T, reg DeviceRegistry) {
 
 	start := time.Now()
 
-	ret, err = CreateDevice(ctx, reg, pb)
+	ret, err = reg.SetByID(ctx, pb.ApplicationIdentifiers, pb.DeviceID,
+		[]string{
+			"created_at",
+			"pending_session",
+			"session",
+			"updated_at",
+		},
+		func(stored *ttnpb.EndDevice) (*ttnpb.EndDevice, []string, error) {
+			if !a.So(stored, should.BeNil) {
+				t.Fatal("Registry is not empty")
+			}
+			return pb, []string{
+				"session",
+				"pending_session",
+			}, nil
+		})
 	if !a.So(err, should.BeNil) || !a.So(ret, should.NotBeNil) {
 		t.FailNow()
 	}
@@ -133,7 +148,22 @@ func handleRegistryTest(t *testing.T, reg DeviceRegistry) {
 	}
 	a.So(ret, should.BeNil)
 
-	ret, err = CreateDevice(ctx, reg, pbOther)
+	ret, err = reg.SetByID(ctx, pbOther.ApplicationIdentifiers, pbOther.DeviceID,
+		[]string{
+			"created_at",
+			"pending_session",
+			"session",
+			"updated_at",
+		},
+		func(stored *ttnpb.EndDevice) (*ttnpb.EndDevice, []string, error) {
+			if !a.So(stored, should.BeNil) {
+				t.Fatal("Registry is not empty")
+			}
+			return pbOther, []string{
+				"session",
+				"pending_session",
+			}, nil
+		})
 	if !a.So(err, should.BeNil) || !a.So(ret, should.NotBeNil) {
 		t.FailNow()
 	}
