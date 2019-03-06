@@ -56,7 +56,7 @@ func (this *GatewayVersion) Validate() error {
 	return nil
 }
 
-var _regex_Gateway_GatewayServerAddress = regexp.MustCompile(`^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(?::[0-9]{1,5})?|$`)
+var _regex_Gateway_GatewayServerAddress = regexp.MustCompile(`^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(?::[0-9]{1,5})?$|^$`)
 
 func (this *Gateway) Validate() error {
 	if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(&(this.GatewayIdentifiers)); err != nil {
@@ -80,7 +80,7 @@ func (this *Gateway) Validate() error {
 		return github_com_mwitkow_go_proto_validators.FieldError("GatewayVersionIdentifiers", err)
 	}
 	if !_regex_Gateway_GatewayServerAddress.MatchString(this.GatewayServerAddress) {
-		return github_com_mwitkow_go_proto_validators.FieldError("GatewayServerAddress", fmt.Errorf(`value '%v' must be a string conforming to regex "^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])(?::[0-9]{1,5})?|$"`, this.GatewayServerAddress))
+		return github_com_mwitkow_go_proto_validators.FieldError("GatewayServerAddress", fmt.Errorf(`value '%v' must be a string conforming to regex "^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])(?::[0-9]{1,5})?$|^$"`, this.GatewayServerAddress))
 	}
 	for _, item := range this.Antennas {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(&(item)); err != nil {

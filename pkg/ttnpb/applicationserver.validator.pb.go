@@ -23,11 +23,11 @@ var _ = fmt.Errorf
 var _ = math.Inf
 var _ = time.Kitchen
 
-var _regex_ApplicationLink_NetworkServerAddress = regexp.MustCompile(`^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(?::[0-9]{1,5})?|$`)
+var _regex_ApplicationLink_NetworkServerAddress = regexp.MustCompile(`^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(?::[0-9]{1,5})?$|^$`)
 
 func (this *ApplicationLink) Validate() error {
 	if !_regex_ApplicationLink_NetworkServerAddress.MatchString(this.NetworkServerAddress) {
-		return github_com_mwitkow_go_proto_validators.FieldError("NetworkServerAddress", fmt.Errorf(`value '%v' must be a string conforming to regex "^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])(?::[0-9]{1,5})?|$"`, this.NetworkServerAddress))
+		return github_com_mwitkow_go_proto_validators.FieldError("NetworkServerAddress", fmt.Errorf(`value '%v' must be a string conforming to regex "^(?:(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*(?:[A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])(?::[0-9]{1,5})?$|^$"`, this.NetworkServerAddress))
 	}
 	if this.APIKey == "" {
 		return github_com_mwitkow_go_proto_validators.FieldError("APIKey", fmt.Errorf(`value '%v' must not be an empty string`, this.APIKey))
